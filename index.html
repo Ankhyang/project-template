@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>模板标题</title>
+</head>
+<body>
+<div id="app"></div>
+<script type="text/javascript" src="http://feifeife.oss-cn-beijing.aliyuncs.com/opensource/cdn/vue.2.6.11.js"></script>
+<script type="text/javascript" src="http://feifeife.oss-cn-beijing.aliyuncs.com/opensource/cdn/vue-router.3.2.0.js"></script>
+<script type="text/javascript" src="http://feifeife.oss-cn-beijing.aliyuncs.com/opensource/cdn/vuex.3.5.1.js"></script>
+<script type="text/javascript">
+    var designW =1920;
+    var font_rate = 100;
+    //适配
+    document.getElementsByTagName("html")[0].style.fontSize = document.body.offsetWidth / designW * font_rate + "px";
+    document.getElementsByTagName("body")[0].style.fontSize = document.body.offsetWidth / designW * font_rate + "px";
+    //监测窗口大小变化
+    window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", function() {
+        document.getElementsByTagName("html")[0].style.fontSize = document.body.offsetWidth / designW * font_rate + "px";
+        document.getElementsByTagName("body")[0].style.fontSize = document.body.offsetWidth / designW * font_rate + "px";
+    }, false);
+</script>
+</body>
+</html>
