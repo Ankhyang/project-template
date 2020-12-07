@@ -1,13 +1,15 @@
 import Vue from 'vue'
 import router from './router' // 挂载路由
-import './router/permissions' // 挂载路由权限校验
 import store from "./utils/store" //加载状态管理
-import app from './app'  //主页面
-import './utils/element-ui'
+import App from './App'  //主页面
+
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+Vue.use(Antd)
 
 new Vue({
     el:'#app',
     router,
     store,
-    render:(h)=>h(app)
+    render:(h)=>h(App)
 })

@@ -4,8 +4,8 @@
     </div>
 </template>
 <script>
-    import './common.less'
-    import './base.less'
+    import './style/common.less'
+    import './style/base.less'
     export default {
         name: 'App'
     }

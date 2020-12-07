@@ -31,8 +31,9 @@ eg:
     * utils-----全局方法目录
         * store-----全局状态管理
     * app.vue-----页面主入口
-    * base.less-----初始化样式
-    * common.less-----全局样式表
+    * style-----公共样式管理
+        * base.less-----初始化样式
+        * common.less-----全局样式表
     * main.js-----项目打包主入口
 * babel.config.js-----babel 配置
 

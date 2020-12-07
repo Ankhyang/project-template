@@ -1,14 +1,16 @@
-<template>
-    <div>我是界面内容</div>
-</template>
-
-<script>
-import './index.less'
+<script type="text/jsx">
 export default {
-
+    name: 'home',
+    render() {
+        return (
+            <div>
+                我是内容
+            </div>
+        )
+    }
 }
 </script>
 
-<style>
+<style lang="less" scoped>
 
 </style>
