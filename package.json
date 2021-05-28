@@ -15,6 +15,7 @@
     "crypto-js": "^4.0.0",
     "element-ui": "^2.13.2",
     "js-cookie": "^2.2.1",
+    "mapbox-gl": "^2.3.0",
     "nprogress": "^0.2.0",
     "vuex-persistedstate": "^3.0.1"
   },

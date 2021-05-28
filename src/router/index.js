@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-12-07 10:37:52
+ * @LastEditTime: 2021-05-28 17:43:40
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \project-template\src\router\index.js
+ */
 /**
  * 路由控制
  **/
@@ -9,7 +17,7 @@ VueRouter.prototype.push = function push(location) {
     return originalPush.call(this, location).catch(err => err)
 }
 const constantRoutes = [
-    ...baseRouter,
+    // ...baseRouter,
     {
         path: '/',
         component: PageLayout,
