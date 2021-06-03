@@ -110,6 +110,20 @@ module.exports = {
                         }
                     }
                 ]
+            },
+            {
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                enforce: 'pre',
+                loader: 'tslint-loader'
+            },
+            {
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                exclude: /node_modules/,
+                options: {
+                    appendTsSuffixTo: [/\.vue$/]
+                }
             }
         ]
     },
@@ -117,7 +131,7 @@ module.exports = {
         alias: {
             ...alias
         },
-        extensions: ['*', '.js', '.jsx', '.vue']
+        extensions: ['*', '.js', '.jsx', '.vue', '.ts']
     },
     externals: {
         "vue":"Vue",

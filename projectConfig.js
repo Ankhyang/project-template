@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-12-07 10:37:52
+ * @LastEditTime: 2021-05-31 10:09:19
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \project-template\projectConfig.js
+ */
 /**
  * 项目配置集合
  **/
@@ -17,6 +25,7 @@ const projectConfig={
         '@public':path.resolve(__dirname,'src/public'), // 静态资源文件
         '@httpServer':path.resolve(__dirname,'src/httpServer'), // API 管理
         '@components':path.resolve(__dirname,'src/components'), // 通用组件库
+        '@style': path.resolve(__dirname, 'src/style')
     },
     proxy: {  //自定义代理配置集合
         '/uc':{
