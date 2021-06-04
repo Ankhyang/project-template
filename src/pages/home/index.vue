@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-12-07 10:37:52
- * @LastEditTime: 2021-06-04 17:35:55
+ * @LastEditTime: 2021-06-04 18:19:03
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \project-template\src\pages\home\index.vue
@@ -228,6 +228,22 @@ export default {
             }).setLngLat(coordinates)
                 .setHTML(description) 
                 .addTo(map)
+        },
+        // 根据数据添加资源信息
+        addSources() {
+
+        },
+        // 添加点层
+        addPointLayer(){
+
+        },
+        // 添加多边形层
+        addPolygonLayer() {
+
+        },
+        // 清除所有层信息
+        clearLayer() {
+            const { map } = this;
         }
     },
     mounted() {
@@ -411,9 +427,11 @@ export default {
             })
             map.addLayer({
                 id: 'places',
-                type: 'symbol', // 
+                type: 'symbol', 
                 source: 'places',
-                'layout': {
+                minzoom: 11, 
+                maxzoom: 15, // 控制放大缩小显示的数据
+                layout: {
                     'icon-image': '{icon}', // 对应source的icon
                     'icon-size': 1,
                     'icon-allow-overlap': true
