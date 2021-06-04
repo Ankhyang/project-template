@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-12-07 10:37:52
- * @LastEditTime: 2021-06-03 17:25:36
+ * @LastEditTime: 2021-06-04 17:35:55
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \project-template\src\pages\home\index.vue
@@ -17,8 +17,11 @@
 <script>
 import mapboxgl, { Map, GeoJSONSourceRaw, AnySourceImpl } from "mapbox-gl"
 import axios from 'axios'
-import {drawMixin} from '@utils/map_draw_mixin.js';
+import { drawMixin } from '@utils/map_draw_mixin.js';
 import { LayerFactory } from '../../utils/deckglLayer/LayerFactory.ts'
+import { ACCESS_TOKEN, STYLE, CENTER } from '../../constant/map.js'
+import location from '../../assets/location.png'
+import factory from '../../assets/factory.png'
 
 import '../../style/mapboxgl.less'
 
@@ -127,6 +130,11 @@ const linedata = [
         linewidth: 2,
     },
 ]
+const imgs = {
+    'location': location, 
+    'factory': factory
+}
+
 export default {
     name: 'map',
     mixins: [drawMixin],
@@ -210,16 +218,29 @@ export default {
                 })
             }
         },
+        // 展示弹框
+        showPopup({ className = 'popup-container-common', coordinates, description}) {
+            const { map } = this;
+            new mapboxgl.Popup({
+                maxWidth: 'none',
+                className: `${className}`, 
+                anchor: 'left' // 弹框居右
+            }).setLngLat(coordinates)
+                .setHTML(description) 
+                .addTo(map)
+        }
     },
     mounted() {
-        mapboxgl.accessToken = 'pk.eyJ1IjoieWFuZ2h1YW5mb3JtYXBib3giLCJhIjoiY2twODRyYTFmMDFhMDJwcGlsdnk5YWZmZyJ9.xsV7A10qvz9XKYsNBOlJwA';
+        mapboxgl.accessToken = ACCESS_TOKEN;
         let map = new Map({
             container: 'map',
-            style: 'mapbox://styles/yanghuanformapbox/ckp85houo593d17nxdjbmxuy4',
-            center: [106.6507, 29.6679],
+            style: STYLE,
+            center: CENTER,
             zoom: 11,
             attributionControl: false
         });
+
+        const { showPopup } = this;
 
         // 添加全屏控制图标
         // map.addControl(new mapboxgl.FullscreenControl())
@@ -267,6 +288,17 @@ export default {
         //             .setMaxWidth("300px")
         //             .addTo(map);
 
+        // 第一次加载，加载图标
+        map.on('load', function(){
+            // Load an image from an external URL.
+            Object.keys(imgs).forEach(item => {
+                map.loadImage(imgs[item], function(error, image) {
+                    if (error) throw error;
+                    // Add the loaded image to the style's sprite with the ID item.
+                    if (!map.hasImage(item)) map.addImage(item, image);
+                });
+            })
+        })
         map.on('load', async function() {
             let ids = [];
             // 添加建筑物
@@ -333,8 +365,8 @@ export default {
                         {
                             'type': 'Feature',
                             'properties': {
-                                'description': '<div class="name"><strong>我是复盛街道的</strong></div>',
-                                'icon': 'theatre-15'
+                                'description': '<div class="name"><strong>我是复盛街道</strong></div>',
+                                'icon': 'location'
                             },
                             'geometry': {
                                 'type': 'Point',
@@ -344,12 +376,34 @@ export default {
                         {
                             'type': 'Feature',
                             'properties': {
-                                'description': '<strong>我是人和街道的</strong>',
-                                'icon': 'theatre-15'
+                                'description': '<div class="name"><strong>我是人和街道</strong></div>',
+                                'icon': 'factory' // 当前点图标
                             },
                             'geometry': {
                                 'type': 'Point',
                                 'coordinates': [106.53723,29.627022]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {
+                                'description': '<div class="name"><strong>我是人和街道-康居1期</strong></div>',
+                                'icon': 'factory' // 当前点图标
+                            },
+                            'geometry': {
+                                'type': 'Point',
+                                'coordinates': [106.536028,29.625922]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {
+                                'description': '<div class="name"><strong>我是金科天湖美镇</strong></div>',
+                                'icon': 'factory' // 当前点图标
+                            },
+                            'geometry': {
+                                'type': 'Point',
+                                'coordinates': [106.528411,29.628029]
                             }
                         },
                     ]
@@ -360,8 +414,8 @@ export default {
                 type: 'symbol', // 
                 source: 'places',
                 'layout': {
-                    'icon-image': '{icon}',
-                    'icon-size': 2,
+                    'icon-image': '{icon}', // 对应source的icon
+                    'icon-size': 1,
                     'icon-allow-overlap': true
                 }
             })
@@ -401,12 +455,7 @@ export default {
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                 }
-                new mapboxgl.Popup({
-                    maxWidth: 'none',
-                    className: 'popup-container'
-                }).setLngLat(coordinates)
-                    .setHTML(description)
-                    .addTo(map);
+                showPopup({coordinates, description})
             })
 
             // Change the cursor to a pointer when the mouse is over the places layer.
