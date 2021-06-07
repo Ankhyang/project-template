@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-12-07 10:37:52
- * @LastEditTime: 2021-06-04 18:19:03
+ * @LastEditTime: 2021-06-07 14:55:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \project-template\src\pages\home\index.vue
@@ -142,6 +142,7 @@ export default {
         return {
             map: null,
             ids: [],
+            layers: []
         }
     },
     methods:{
@@ -229,21 +230,114 @@ export default {
                 .setHTML(description) 
                 .addTo(map)
         },
+        // 设置内容
+        setDescription(data) {
+            return `<div class="name"><strong>${data.name}</strong></div>`
+        },
         // 根据数据添加资源信息
-        addSources() {
-
+        addSources({name, icon = 'location', type = 'Point', data}) {
+            const { map, setDescription } = this;
+            const arr = data.forEach(item => {
+                return {
+                            type: 'Feature',
+                            properties: {
+                                description: setDescription(item),
+                                icon
+                            },
+                            geometry: {
+                                type,
+                                coordinates: item.coordinates
+                            }
+                        }
+            })
+            map.addSource(name, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: arr
+                }
+            })
         },
-        // 添加点层
-        addPointLayer(){
+        // 根据type添加不同的图层
+        addLayer({id, type, source, minZoom = 0, maxZoom = 22}) {
+            const { map } = this;
+            let paint = null, layout = null;
+            switch(type) {
+                case 'line': 
+                    paint = {
+                        'line-color': '#00ACE6',
+                        'line-width': 2,
+                        "line-opacity": 0.8,
+                        // 'line-dasharray': [1, 2], // 单个线条长度，间隔
+                        'line-gradient': [
+                            'interpolate', ['linear'], ['line-progress'],
+                            0,
+                            'blue',
+                            0.1,
+                            'royalblue',
+                            0.3,
+                            'cyan',
+                            0.5,
+                            'lime',
+                            0.7,
+                            'yellow',
+                            1,
+                            'red'
+                        ]
+                    }
+                    layout = {
+                        'line-cap': 'round',
+                        'line-join': 'miter'
+                    }
+                    break;
+                case 'symbol':
+                    paint = {
+                        'icon-opacity': 0.8
+                    }
+                    layout = {
+                        'icon-image': '{icon}', // 对应source的icon
+                        'icon-size': 1,
+                        'icon-allow-overlap': true,
+                    }
+                    break;
+                case 'circle':
+                    paint = {
+                        'circle-color': "red", // 内圆的颜色
+                        'circle-stroke-width': 10, // 外圆的直径大小
+                        'circle-stroke-color': 'yellow' // 外圆填充的颜色
+                    }
+                    layout = {
 
-        },
-        // 添加多边形层
-        addPolygonLayer() {
+                    }
+                    break;
+                case 'fill':
+                    paint = {
+                        'fill-color': 'red', 
+                        'fill-opacity': 0.8, 
+                        'fill-outline-color': 'yellow', 
+                    }
+                    layout = {
 
+                    }
+                    break;
+            }
+            map.addLayer({
+                id,
+                type,
+                source,
+                minZoom, 
+                maxZoom,
+                paint,
+                layout
+            })
         },
-        // 清除所有层信息
+        // 清除所有layers层信息
         clearLayer() {
             const { map } = this;
+            layers.forEach(item => {
+                map.removeLayer(item);
+                map.removeSource(item)
+            })
         }
     },
     mounted() {
@@ -256,7 +350,7 @@ export default {
             attributionControl: false
         });
 
-        const { showPopup } = this;
+        const { showPopup, addLayer } = this;
 
         // 添加全屏控制图标
         // map.addControl(new mapboxgl.FullscreenControl())
@@ -285,24 +379,6 @@ export default {
         //     },
         //     trackUserLocation: true
         // }));
-
-        // popup弹框， 展示信息
-        // var markerHeight = 50, markerRadius = 10, linearOffset = 25;
-        // var popupOffsets = {
-        //     'top': [0, 0],
-        //     'top-left': [0,0],
-        //     'top-right': [0,0],
-        //     'bottom': [0, -markerHeight],
-        //     'bottom-left': [linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
-        //     'bottom-right': [-linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
-        //     'left': [markerRadius, (markerHeight - markerRadius) * -1],
-        //     'right': [-markerRadius, (markerHeight - markerRadius) * -1]
-        // };
-        // var popup = new mapboxgl.Popup({offset: popupOffsets, className: 'my-class'})
-        //             .setLngLat([106.6507, 29.6679])
-        //             .setHTML("<h1>Hello World!</h1>")
-        //             .setMaxWidth("300px")
-        //             .addTo(map);
 
         // 第一次加载，加载图标
         map.on('load', function(){
@@ -336,37 +412,7 @@ export default {
                     lineMetrics: true,
                     data: item.url
                 })
-                map.addLayer({
-                    type: 'line',
-                    source: item.id,
-                    id: item.id,
-                    paint: {
-                        'line-color': 'red',
-                        'line-width': item.linewidth,
-                        "line-opacity": 0.8,
-                        'line-gradient': [
-                            'interpolate',
-                            ['linear'],
-                            ['line-progress'],
-                            0,
-                            'blue',
-                            0.1,
-                            'royalblue',
-                            0.3,
-                            'cyan',
-                            0.5,
-                            'lime',
-                            0.7,
-                            'yellow',
-                            1,
-                            'red'
-                        ]
-                    },
-                    layout: {
-                        'line-cap': 'round',
-                        'line-join': 'miter'
-                    }
-                })
+                addLayer({id: item.id, type: 'line', source: item.id})
             })
 
             // 添加数据展示
@@ -425,18 +471,8 @@ export default {
                     ]
                 }
             })
-            map.addLayer({
-                id: 'places',
-                type: 'symbol', 
-                source: 'places',
-                minzoom: 11, 
-                maxzoom: 15, // 控制放大缩小显示的数据
-                layout: {
-                    'icon-image': '{icon}', // 对应source的icon
-                    'icon-size': 1,
-                    'icon-allow-overlap': true
-                }
-            })
+            
+            addLayer({id: 'places', type: 'symbol', source: 'places', minZoom: 11, maxZoom: 15})
 
             map.addSource('my-data', {
                 "type": "geojson",
@@ -452,24 +488,11 @@ export default {
                     }
                 }
             });
-            map.addLayer({
-                id: 'my-data',
-                type: 'circle', // 圆
-                source: 'my-data',
-                paint: {
-                    // Mapbox Style Specification paint properties
-                    "circle-color": "red", // 内圆的颜色
-                    "circle-stroke-width": 20, // 外圆的直径大小
-                    'circle-stroke-color': 'yellow' // 外圆填充的颜色
-                },
-                layout: {
-                    // Mapbox Style Specification layout properties
-                }
-            })
+            addLayer({id: 'my-data', type: 'circle', source: 'my-data'})
 
             map.on('click', 'places', function(e) {
-                var coordinates = e.features[0].geometry.coordinates.slice();
-                var description = e.features[0].properties.description;
+                let coordinates = e.features[0].geometry.coordinates.slice();
+                let description = e.features[0].properties.description;
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                 }
@@ -510,6 +533,10 @@ export default {
                     'line-dasharray': [1, 2] // 单个线条长度，间隔
                 }
             })
+
+            // setTimeout(() => {
+            //     map.setStyle("mapbox://styles/yanghuanformapbox/ckpm92rra1fwx18quc3avdd9k")
+            // }, 10000)
 
         });
 
